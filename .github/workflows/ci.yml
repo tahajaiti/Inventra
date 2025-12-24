@@ -9,11 +9,11 @@ on:
 
 jobs:
   build:
-    name: Build and Analyze
+    name: Build, Test & SonarQube
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -25,28 +25,25 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build & Test (CI profile)
+      - name: Build & Test
         run: mvn clean verify -Dspring.profiles.active=ci
 
-      - name: Publish Test Report
-        uses: actions/upload-artifact@v4
+      - name: Upload test reports
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: junit-reports
           path: '**/target/surefire-reports/*.xml'
 
-      - name: SonarQube Analysis
+      - name: SonarQube Analysis (with Quality Gate)
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         run: |
           mvn sonar:sonar \
-            -Pci \
+            -Dsonar.projectKey=inventra \
+            -Dsonar.projectName=inventra \
+            -Dsonar.host.url=$SONAR_HOST_URL \
             -Dsonar.token=$SONAR_TOKEN \
-            -Dsonar.host.url=$SONAR_HOST_URL
-
-      - name: SonarQube Quality Gate Check
-        uses: sonarsource/sonarqube-quality-gate-action@master
-        timeout-minutes: 5
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+            -Dsonar.java.binaries=target/classes \
+            -Dsonar.qualitygate.wait=true
