@@ -1,3 +1,22 @@
 spring:
   application:
     name: inventra
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+
+app:
+  jwt:
+    secret-key: ${JWT_SECRET_KEY}
+    expiration-ms: ${JWT_EXPIRATION_MS:1200000}
+    issuer: ${JWT_ISSUER_NAME:InventraApp}
+  security:
+    role-prefix: ${SECURITY_ROLE_PREFIX:ROLE_}
+    bcrypt-strength: ${SECURITY_BCRYPT_STRENGTH:10}
+  admin:
+    init-login: ${ADMIN_INIT_LOGIN}
+    init-password: ${ADMIN_INIT_PASSWORD}
+
+logging:
+  level:
+    root: ${LOGGING_LEVEL_ROOT:INFO}

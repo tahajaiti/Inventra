@@ -1,0 +1,39 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  data:
+    jdbc:
+      dialect: postgresql
+
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
+
+logging:
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %clr(%-5level) %clr(%logger{36}){cyan} - %msg%n"
+  level:
+    com.kyojin.packagito: DEBUG
+    org.springframework.data.jpa: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG

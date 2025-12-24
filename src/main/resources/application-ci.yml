@@ -1,0 +1,44 @@
+spring:
+  config:
+    activate:
+      on-profile: ci
+
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true
+
+  main:
+    lazy-initialization: true
+
+app:
+  jwt:
+    secret-key: bd25ec392f76dbc79a278b5317d4fb0a796c780c04f49e4c0ac763419c518c5c
+    refresh:
+      secret-key: bd25ec392f76dbc79a278b531799fb0a796c780c04f49e4c0ac763419c518rd
+  admin:
+    init-login: admin
+    init-password: admin123
+  security:
+    bcrypt-strength: 4
+
+logging:
+  level:
+    root: WARN
+    com.kyojin.packagito: INFO
+    org.springframework.data.jpa: ERROR
+    org.springframework.security: ERROR
