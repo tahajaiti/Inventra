@@ -2,6 +2,8 @@ package com.hnaya.inventra.repository;
 
 import com.hnaya.inventra.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface productRepository extends JpaRepository<Product, Long> {
+@Repository
+public interface StockRepository extends JpaRepository<Product, Long> {
 }
