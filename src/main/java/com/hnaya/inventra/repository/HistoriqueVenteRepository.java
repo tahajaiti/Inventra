@@ -12,19 +12,8 @@ import java.util.List;
 @Repository
 public interface HistoriqueVenteRepository extends JpaRepository<HistoriqueVente, Long> {
 
-    List<HistoriqueVente> findByProductIdAndWarehouseIdAndDateVenteAfter(
-        Long productId, 
-        Long warehouseId, 
-        LocalDateTime dateDebut
-    );
+    List<HistoriqueVente> findByProductIdAndWarehouseIdAndDateVenteAfter(Long productId, Long warehouseId, LocalDateTime dateDebut);
 
-    @Query("SELECT h FROM HistoriqueVente h WHERE h.product.id = :productId " +
-           "AND h.warehouse.id = :warehouseId " +
-           "AND h.dateVente >= :dateDebut " +
-           "ORDER BY h.dateVente DESC")
-    List<HistoriqueVente> findHistoriqueForPrevision(
-        @Param("productId") Long productId,
-        @Param("warehouseId") Long warehouseId,
-        @Param("dateDebut") LocalDateTime dateDebut
-    );
+    @Query("SELECT h FROM HistoriqueVente h WHERE h.product.id = :productId " + "AND h.warehouse.id = :warehouseId " + "AND h.dateVente >= :dateDebut " + "ORDER BY h.dateVente DESC")
+    List<HistoriqueVente> findHistoriqueForPrevision(@Param("productId") Long productId, @Param("warehouseId") Long warehouseId, @Param("dateDebut") LocalDateTime dateDebut);
 }
