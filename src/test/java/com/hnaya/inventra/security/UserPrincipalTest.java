@@ -57,7 +57,7 @@ class UserPrincipalTest {
     @Test
     @DisplayName("Should return correct authorities based on role")
     void getAuthorities_ShouldReturnRoleWithPrefix() {
-        UserPrincipal principal = new UserPrincipal(1L, "u", "p", "n", "l", "e", Role.MANAGER, true, null);
+        UserPrincipal principal = new UserPrincipal(1L, "u", "p", "n", "l", "e", Role.ADMIN, true, null);
 
         Collection<? extends GrantedAuthority> authorities = principal.getAuthorities();
 
