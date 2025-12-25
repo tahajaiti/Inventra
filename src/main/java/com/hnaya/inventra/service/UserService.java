@@ -25,4 +25,8 @@ public interface UserService {
     void activate(Long id);
 
     void deactivate(Long id);
+
+    UserResponse assignWarehouse(Long userId, Long warehouseId);
+
+    UserResponse unassignWarehouse(Long userId);
 }

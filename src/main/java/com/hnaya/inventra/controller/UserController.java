@@ -74,4 +74,20 @@ public class UserController {
         userService.deactivate(id);
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/{userId}/assign-warehouse/{warehouseId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponse> assignWarehouse(
+            @PathVariable Long userId,
+            @PathVariable Long warehouseId) {
+        UserResponse response = userService.assignWarehouse(userId, warehouseId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{userId}/unassign-warehouse")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserResponse> unassignWarehouse(@PathVariable Long userId) {
+        UserResponse response = userService.unassignWarehouse(userId);
+        return ResponseEntity.ok(response);
+    }
 }
