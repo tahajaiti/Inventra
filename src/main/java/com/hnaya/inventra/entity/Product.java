@@ -1,6 +1,6 @@
 package com.hnaya.inventra.entity;
 
-import com.hnaya.inventra.enums.UniteMesure;
+import com.hnaya.inventra.entity.enums.UniteMesure;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
