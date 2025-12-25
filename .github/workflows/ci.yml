@@ -43,7 +43,7 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             echo "Running in Pull Request Mode..."
-            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            mvn sonar:sonar \
               -Dsonar.token=$SONAR_TOKEN \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.projectKey=inventra \
@@ -52,7 +52,7 @@ jobs:
               -Dsonar.pullrequest.base=${{ github.base_ref }}
           else
             echo "Running in Branch Mode for: ${{ github.ref_name }}"
-            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            mvn sonar:sonar \
               -Dsonar.token=$SONAR_TOKEN \
               -Dsonar.host.url=$SONAR_HOST_URL \
               -Dsonar.projectKey=inventra \
