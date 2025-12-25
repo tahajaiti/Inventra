@@ -2,7 +2,8 @@ name: Java CI with SonarQube
 
 on:
   push:
-    branches: [ dev ]
+    branches:
+      - '**'
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -31,7 +32,7 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      - name: Build, Test & Report
+      - name: Build & Test
         run: mvn clean verify -Dspring.profiles.active=ci
 
       - name: SonarQube Analysis
@@ -40,11 +41,29 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-            -Dsonar.token=$SONAR_TOKEN \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.projectKey=inventra \
-            # These 3 lines "Unlock" the PR dropdown and comments:
-            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-            -Dsonar.pullrequest.base=${{ github.base_ref }}
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "Running in Pull Request Mode..."
+            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+              -Dsonar.token=$SONAR_TOKEN \
+              -Dsonar.host.url=$SONAR_HOST_URL \
+              -Dsonar.projectKey=inventra \
+              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+              -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+              -Dsonar.pullrequest.base=${{ github.base_ref }}
+          else
+            echo "Running in Branch Mode for: ${{ github.ref_name }}"
+            mvn org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+              -Dsonar.token=$SONAR_TOKEN \
+              -Dsonar.host.url=$SONAR_HOST_URL \
+              -Dsonar.projectKey=inventra \
+              -Dsonar.branch.name=${{ github.ref_name }}
+          fi
+
+      - name: SonarQube Quality Gate Check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        with:
+          scanMetadataReportFile: target/sonar/report-task.txt
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
