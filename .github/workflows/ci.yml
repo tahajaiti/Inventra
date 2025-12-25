@@ -2,14 +2,13 @@ name: Java CI with SonarQube
 
 on:
   push:
-    branches:
-      - dev
+    branches: [ dev ]
   pull_request:
     types: [opened, synchronize, reopened]
 
 jobs:
   build:
-    name: Build, Test & SonarQube
+    name: Build & Analysis
     runs-on: ubuntu-latest
 
     steps:
@@ -25,25 +24,24 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build & Test
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Build, Test & Report
         run: mvn clean verify -Dspring.profiles.active=ci
 
-      - name: Upload test reports
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: junit-reports
-          path: '**/target/surefire-reports/*.xml'
-
-      - name: SonarQube Analysis (with Quality Gate)
+      - name: SonarQube Analysis
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mvn sonar:sonar \
             -Dsonar.projectKey=inventra \
             -Dsonar.projectName=inventra \
-            -Dsonar.host.url=$SONAR_HOST_URL \
-            -Dsonar.token=$SONAR_TOKEN \
-            -Dsonar.java.binaries=target/classes \
-            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.wait=true \
+            -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
