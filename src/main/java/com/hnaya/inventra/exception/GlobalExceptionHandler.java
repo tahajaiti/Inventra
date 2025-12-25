@@ -36,6 +36,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({BadCredentialsException.class})
     public ResponseEntity<ErrorResponse> handleUnauthorized(Exception ex) {
+        log.error(ex.getMessage(), ex);
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ErrorResponse.of(HttpStatus.UNAUTHORIZED, "Invalid credentials or token"));
@@ -56,6 +57,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
+        log.error(ex.getMessage(), ex);
         return ResponseEntity
                 .status(HttpStatus.FORBIDDEN)
                 .body(ErrorResponse.of(HttpStatus.FORBIDDEN, "Access denied: You do not have permission to perform this action"));

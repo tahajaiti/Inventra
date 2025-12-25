@@ -63,9 +63,6 @@ public class JwtUtil {
         return getClaims(token).getSubject();
     }
 
-    public String getRolesFromToken(String token) {
-        return getClaims(token).get("roles", String.class);
-    }
 
     public boolean validateToken(String token) {
         try {

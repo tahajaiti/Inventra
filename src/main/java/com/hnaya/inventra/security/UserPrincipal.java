@@ -73,14 +73,4 @@ public class UserPrincipal implements UserDetails {
         return role == Role.ADMIN;
     }
 
-    public boolean isManager() {
-        return role == Role.MANAGER;
-    }
-
-    public boolean hasAccessToWarehouse(Long warehouseId) {
-        if (isAdmin()) {
-            return true;
-        }
-        return this.warehouseId != null && this.warehouseId.equals(warehouseId);
-    }
 }

@@ -2,7 +2,6 @@ package com.hnaya.inventra.service.impl;
 
 import com.hnaya.inventra.dto.request.CreateWarehouseRequest;
 import com.hnaya.inventra.dto.response.WarehouseResponse;
-import com.hnaya.inventra.entity.User;
 import com.hnaya.inventra.entity.Warehouse;
 import com.hnaya.inventra.exception.ResourceNotFoundException;
 import com.hnaya.inventra.mapper.WarehouseMapper;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class WarehouseServiceImpl implements WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
-    private final UserRepository userRepository;
     private final WarehouseMapper warehouseMapper;
 
     @Override
