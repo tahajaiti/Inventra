@@ -63,6 +63,6 @@ class UserPrincipalTest {
 
         assertNotNull(authorities);
         assertEquals(1, authorities.size());
-        assertEquals("ROLE_USER", authorities.iterator().next().getAuthority());
+        assertEquals("ROLE_ADMIN", authorities.iterator().next().getAuthority());
     }
 }
