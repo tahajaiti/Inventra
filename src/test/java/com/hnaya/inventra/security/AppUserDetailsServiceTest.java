@@ -2,6 +2,7 @@ package com.hnaya.inventra.security;
 
 import com.hnaya.inventra.entity.User;
 import com.hnaya.inventra.repository.UserRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -22,34 +23,32 @@ class AppUserDetailsServiceTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private AppUserDetailsService userDetailsService;
+    private AppUserDetailsService underTest;
 
     @Test
-    void loadUserByUsername_whenUserExists_returnsUserDetails() {
-        User user = new User();
-        user.setUsername("john");
+    @DisplayName("Should return UserPrincipal when user exists")
+    void loadUserByUsername_Success() {
+        String username = "test_user";
+        User mockUser = new User();
+        mockUser.setUsername(username);
 
-        when(userRepository.findByUsername("john"))
-                .thenReturn(Optional.of(user));
+        when(userRepository.findByUsername(username)).thenReturn(Optional.of(mockUser));
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername("john");
+        UserDetails result = underTest.loadUserByUsername(username);
 
-
-        assertNotNull(userDetails);
-        assertEquals("john", userDetails.getUsername());
-        verify(userRepository).findByUsername("john");
+        assertNotNull(result);
+        assertEquals(username, result.getUsername());
+        verify(userRepository).findByUsername(username);
     }
 
     @Test
-    void loadUserByUsername_whenUserDoesNotExist_throwsException() {
-        when(userRepository.findByUsername("ghost"))
-                .thenReturn(Optional.empty());
+    @DisplayName("Should throw UsernameNotFoundException when user is not found")
+    void loadUserByUsername_UserNotFound() {
+        String username = "unknown_user";
+        when(userRepository.findByUsername(username)).thenReturn(Optional.empty());
 
-        assertThrows(
-                UsernameNotFoundException.class,
-                () -> userDetailsService.loadUserByUsername("ghost")
-        );
-
-        verify(userRepository).findByUsername("ghost");
+        assertThrows(UsernameNotFoundException.class, () -> {
+            underTest.loadUserByUsername(username);
+        });
     }
 }
