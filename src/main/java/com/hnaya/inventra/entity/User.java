@@ -1,11 +1,8 @@
 package com.hnaya.inventra.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.hnaya.inventra.entity.enums.Role;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
@@ -18,5 +15,26 @@ import lombok.experimental.SuperBuilder;
 public class User extends BaseEntity {
 
 
+    @Column(unique = true, nullable = false)
+    private String username;
 
+    @Column(nullable = false)
+    private String password;
+
+    private String name;
+    private String lastName;
+
+    @Column(unique = true)
+    private String email;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
+
+    @Builder.Default
+    private boolean active = true;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "warehouse_id")
+    private Warehouse assignedWarehouse;
 }
