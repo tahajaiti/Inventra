@@ -69,8 +69,4 @@ public class UserPrincipal implements UserDetails {
         return active;
     }
 
-    public boolean isAdmin() {
-        return role == Role.ADMIN;
-    }
-
 }

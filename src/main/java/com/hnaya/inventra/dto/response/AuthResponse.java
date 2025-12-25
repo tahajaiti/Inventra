@@ -16,13 +16,4 @@ public class AuthResponse {
     private String type;
     private String username;
     private Role role;
-
-    public static AuthResponse of(String token, String username, Role role) {
-        return AuthResponse.builder()
-                .token(token)
-                .type("Bearer")
-                .username(username)
-                .role(role)
-                .build();
-    }
 }

@@ -5,7 +5,6 @@ import com.hnaya.inventra.dto.response.WarehouseResponse;
 import com.hnaya.inventra.entity.Warehouse;
 import com.hnaya.inventra.exception.ResourceNotFoundException;
 import com.hnaya.inventra.mapper.WarehouseMapper;
-import com.hnaya.inventra.repository.UserRepository;
 import com.hnaya.inventra.repository.WarehouseRepository;
 import com.hnaya.inventra.service.WarehouseService;
 import lombok.RequiredArgsConstructor;
