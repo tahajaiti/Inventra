@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @SuperBuilder
 public class HistoriqueVente extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "produit_id", nullable = false)
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
     @ManyToOne(fetch = FetchType.LAZY)
