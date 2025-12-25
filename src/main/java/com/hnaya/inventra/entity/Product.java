@@ -11,11 +11,11 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Getter
 @Setter
-@Table(name = "produits")
+@Table(name = "products")
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public class Produit extends BaseEntity{
+public class Product extends BaseEntity{
 
     @Column(name = "nom", nullable = false)
     private String nom;
