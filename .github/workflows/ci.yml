@@ -2,8 +2,7 @@ name: Java CI with SonarQube
 
 on:
   push:
-    branches:
-      - '**'
+    branches: [ dev ]
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -21,9 +20,9 @@ jobs:
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
-          distribution: 'temurin'
-          cache: 'maven'
+          java-version: "21"
+          distribution: "temurin"
+          cache: "maven"
 
       - name: Cache SonarQube packages
         uses: actions/cache@v4
@@ -39,25 +38,11 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "Running in Pull Request Mode..."
-            mvn sonar:sonar \
-              -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.host.url=$SONAR_HOST_URL \
-              -Dsonar.projectKey=inventra \
-              -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
-              -Dsonar.pullrequest.branch=${{ github.head_ref }} \
-              -Dsonar.pullrequest.base=${{ github.base_ref }}
-          else
-            echo "Running in Branch Mode for: ${{ github.ref_name }}"
-            mvn sonar:sonar \
-              -Dsonar.token=$SONAR_TOKEN \
-              -Dsonar.host.url=$SONAR_HOST_URL \
-              -Dsonar.projectKey=inventra \
-              -Dsonar.branch.name=${{ github.ref_name }}
-          fi
+          mvn sonar:sonar \
+            -Dsonar.token=$SONAR_TOKEN \
+            -Dsonar.host.url=$SONAR_HOST_URL \
+            -Dsonar.projectKey=inventra
 
       - name: SonarQube Quality Gate Check
         uses: sonarsource/sonarqube-quality-gate-action@master
