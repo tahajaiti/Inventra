@@ -1,19 +1,14 @@
 package com.hnaya.inventra.service.impl;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Service;
-
 
 @Service
 @RequiredArgsConstructor
 public class GeminiService {
 
-
     private final ChatModel chatModel;
-
 
     public String genererMessageRecommandation(String productName, Integer stockActuel, Double prevision30Jours,
             Integer quantiteACommander, Double niveauConfiance) {
@@ -22,12 +17,10 @@ public class GeminiService {
                     niveauConfiance);
             return chatModel.call(prompt);
 
-
         } catch (Exception e) {
             return genererMessageParDefaut(quantiteACommander, productName);
         }
     }
-
 
     private String construirePrompt(String productName, Integer stockActuel, Double prevision30Jours,
             Integer quantiteACommander, Double niveauConfiance) {
@@ -59,7 +52,6 @@ public class GeminiService {
                 quantiteACommander,
                 niveauConfiance);
     }
-
 
     private String genererMessageParDefaut(Integer quantiteACommander, String productName) {
         if (quantiteACommander > 0) {
