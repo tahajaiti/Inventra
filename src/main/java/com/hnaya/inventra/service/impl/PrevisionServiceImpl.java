@@ -6,6 +6,7 @@ import com.hnaya.inventra.entity.Prevision;
 import com.hnaya.inventra.entity.Product;
 import com.hnaya.inventra.entity.Stock;
 import com.hnaya.inventra.entity.Warehouse;
+import com.hnaya.inventra.exception.ResourceNotFoundException;
 import com.hnaya.inventra.mapper.PrevisionMapper;
 import com.hnaya.inventra.repository.*;
 import com.hnaya.inventra.service.PrevisionService;
@@ -34,13 +35,14 @@ public class PrevisionServiceImpl implements PrevisionService {
     public PrevisionResponseDTO genererPrevision(Long productId, Long warehouseId) {
 
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new RuntimeException("Produit non trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException(Product.class, productId));
 
         Warehouse warehouse = warehouseRepository.findById(warehouseId)
-                .orElseThrow(() -> new RuntimeException("Entrepôt non trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException(Warehouse.class, warehouseId));
 
         Stock stock = stockRepository.findByProductIdAndWarehouseId(productId, warehouseId)
-                .orElseThrow(() -> new RuntimeException("Stock non trouvé"));
+                .orElseThrow(() -> new ResourceNotFoundException(Stock.class,
+                        "productId: " + productId + ", warehouseId: " + warehouseId));
 
         double prevision = calculerPrevision30Jours(productId, warehouseId);
         double confiance = calculerNiveauConfiance(productId, warehouseId);
@@ -143,7 +145,7 @@ public class PrevisionServiceImpl implements PrevisionService {
     @Override
     public PrevisionResponseDTO getPrevisionById(Long id) {
         Prevision prevision = previsionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Prévision non trouvée"));
+                .orElseThrow(() -> new ResourceNotFoundException(Prevision.class, id));
         return previsionMapper.toResponseDTO(prevision);
     }
 }
