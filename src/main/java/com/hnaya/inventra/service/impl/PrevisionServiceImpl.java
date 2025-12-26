@@ -112,7 +112,7 @@ public class PrevisionServiceImpl implements PrevisionService {
         double ecartType = Math.sqrt(variance);
         double confiance = 100 - ((ecartType / moyenne) * 100);
 
-        return Math.min(99, Math.max(20, confiance));
+        return Math.clamp(confiance, 20, 99);
     }
 
     private int calculerQuantiteACommander(double prevision, Stock stock) {
