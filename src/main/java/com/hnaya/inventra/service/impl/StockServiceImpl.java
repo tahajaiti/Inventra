@@ -36,11 +36,10 @@ public class StockServiceImpl implements StockService {
         Stock stock = stockMapper.toEntity(dto);
         return stockMapper.toResponseDto(stockRepository.save(stock));
     }
-
     @Override
     public StockResponseDTO findById(Long id) {
-        Stock stock = stockRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Stock non trouvé"));
-        return stockMapper.toResponseDto(stock);
+        return stockRepository.findById(id)
+                .map(stockMapper::toResponseDto)
+                .orElseThrow(() -> new ResourceNotFoundException("Stock non trouvé avec l'id : " + id));
     }
 }

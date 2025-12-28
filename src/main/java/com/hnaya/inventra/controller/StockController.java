@@ -26,7 +26,7 @@ public class StockController {
     }
 
 
-    // Cest l'action principale du GESTIONNAIRE d'entrepôt.
+     // Cest l'action principale du GESTIONNAIRE d'entrepôt.
 
     @PatchMapping("/{id}/quantite")
     public ResponseEntity<StockResponseDTO> updateQuantity(
