@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class HistoriqueVenteResponseDTO {
     private Long id;
     private Long productId;
-    private String productName; // Ajouté pour faciliter l'affichage sans fetcher le produit complet
+    private String productName;
     private Long warehouseId;
     private String warehouseName;
     private LocalDate dateVente;

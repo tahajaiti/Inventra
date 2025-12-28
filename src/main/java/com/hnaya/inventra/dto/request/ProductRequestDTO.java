@@ -2,8 +2,10 @@ package com.hnaya.inventra.dto.request;
 
 import com.hnaya.inventra.entity.enums.UniteMesure;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Data;
 
+@Builder
 @Data
 public class ProductRequestDTO {
     @NotBlank(message = "Le nom est obligatoire")
