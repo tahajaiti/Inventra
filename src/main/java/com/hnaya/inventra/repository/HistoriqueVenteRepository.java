@@ -17,7 +17,6 @@ import java.util.Optional;
 @Repository
 public interface HistoriqueVenteRepository extends JpaRepository<HistoriqueVente, Long> {
 
-    List<HistoriqueVente> findByProductIdAndWarehouseIdAndDateVenteAfter(Long productId, Long warehouseId, LocalDateTime dateDebut);
     List<HistoriqueVente> findByWarehouseId(Long warehouseId);
 
     @Query("SELECT h FROM HistoriqueVente h WHERE h.product.id = :productId " + "AND h.warehouse.id = :warehouseId " + "AND h.dateVente >= :dateDebut " + "ORDER BY h.dateVente DESC")
