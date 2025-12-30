@@ -5,6 +5,7 @@ import com.hnaya.inventra.dto.response.HistoriqueVenteResponseDTO;
 import com.hnaya.inventra.entity.HistoriqueVente;
 import com.hnaya.inventra.entity.Stock;
 import com.hnaya.inventra.exception.ResourceNotFoundException;
+import com.hnaya.inventra.exception.StockNotFoundException;
 import com.hnaya.inventra.mapper.HistoriqueVenteMapper;
 import com.hnaya.inventra.repository.HistoriqueVenteRepository;
 import com.hnaya.inventra.repository.StockRepository;
@@ -29,10 +30,10 @@ public class HistoriqueVenteServiceImpl implements HistoriqueVenteService {
     @Transactional
     public HistoriqueVenteResponseDTO enregistrerVente(HistoriqueVenteRequestDTO dto) {
         Stock stock = stockRepository.findByProductIdAndWarehouseId(dto.getProductId(), dto.getWarehouseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Stock non trouvé pour ce produit dans cet entrepôt"));
+                .orElseThrow(() -> new StockNotFoundException("Stock non trouvé pour ce produit dans cet entrepôt"));
 
         if (stock.getQuantiteDisponible() < dto.getQuantiteVendue()) {
-            throw new RuntimeException("Stock insuffisant pour réaliser la vente");
+            throw new StockNotFoundException("Stock insuffisant pour réaliser la vente");
         }
 
         stock.setQuantiteDisponible(stock.getQuantiteDisponible() - dto.getQuantiteVendue());
