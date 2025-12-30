@@ -37,7 +37,6 @@ public class StockController {
 
     @GetMapping("/{id}")
     public ResponseEntity<StockResponseDTO> getStockById(@PathVariable Long id) {
-        // Note: Assurez-vous d'ajouter findById dans votre interface/implémentation si nécessaire
         return ResponseEntity.ok(stockService.findById(id));
     }
 }
