@@ -54,7 +54,7 @@ public class HistoriqueVenteServiceImpl implements HistoriqueVenteService {
     public List<HistoriqueVenteResponseDTO> findByWarehouse(Long warehouseId) {
         return historiqueRepository.findByWarehouseId(warehouseId).stream()
                 .map(historiqueMapper::toResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -62,6 +62,6 @@ public class HistoriqueVenteServiceImpl implements HistoriqueVenteService {
     public List<HistoriqueVenteResponseDTO> findAll() {
         return historiqueRepository.findAll().stream()
                 .map(historiqueMapper::toResponseDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 }

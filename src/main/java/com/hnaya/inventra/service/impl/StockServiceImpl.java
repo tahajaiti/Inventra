@@ -3,14 +3,15 @@ package com.hnaya.inventra.service.impl;
 import com.hnaya.inventra.dto.request.StockRequestDTO;
 import com.hnaya.inventra.dto.response.StockResponseDTO;
 import com.hnaya.inventra.entity.Stock;
-import com.hnaya.inventra.exception.ResourceNotFoundException;
+import com.hnaya.inventra.exception.StockNotFoundException;
 import com.hnaya.inventra.mapper.StockMapper;
 import com.hnaya.inventra.repository.StockRepository;
 import com.hnaya.inventra.service.StockService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
@@ -20,12 +21,15 @@ public class StockServiceImpl implements StockService {
     @Transactional
     public StockResponseDTO updateStockQuantity(Long stockId, Integer newQuantity) {
         Stock stock = stockRepository.findById(stockId)
-                .orElseThrow(() -> new ResourceNotFoundException("Stock non trouvé"));
+                .orElseThrow(() -> new StockNotFoundException("Stock non trouvé"));
 
         stock.setQuantiteDisponible(newQuantity);
 
         if (newQuantity <= stock.getSeuilAlerte()) {
-            System.out.println("ALERTE : Stock critique pour " + stock.getProduct().getNom());
+            log.warn("ALERTE : Stock critique pour le produit {} (quantité: {}, seuil: {})",
+                    stock.getProduct().getNom(),
+                    newQuantity,
+                    stock.getSeuilAlerte());
         }
 
         return stockMapper.toResponseDto(stockRepository.save(stock));
@@ -40,6 +44,6 @@ public class StockServiceImpl implements StockService {
     public StockResponseDTO findById(Long id) {
         return stockRepository.findById(id)
                 .map(stockMapper::toResponseDto)
-                .orElseThrow(() -> new ResourceNotFoundException("Stock non trouvé avec l'id : " + id));
+                .orElseThrow(() -> new StockNotFoundException("Stock non trouvé avec l'id : " + id));
     }
 }
