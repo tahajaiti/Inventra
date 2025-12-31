@@ -12,6 +12,7 @@ import com.hnaya.inventra.service.PrevisionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.hnaya.inventra.security.UserPrincipal;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -31,7 +32,7 @@ public class PrevisionServiceImpl implements PrevisionService {
     private final GeminiService geminiService;
 
     @Override
-    public PrevisionResponseDTO genererPrevision(Long productId, Long warehouseId) {
+    public PrevisionResponseDTO genererPrevision(Long productId, Long warehouseId, UserPrincipal user) {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Produit non trouvé"));
