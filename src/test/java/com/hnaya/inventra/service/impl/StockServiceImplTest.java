@@ -4,9 +4,12 @@ import com.hnaya.inventra.dto.request.StockRequestDTO;
 import com.hnaya.inventra.dto.response.StockResponseDTO;
 import com.hnaya.inventra.entity.Product;
 import com.hnaya.inventra.entity.Stock;
+import com.hnaya.inventra.entity.Warehouse;
+import com.hnaya.inventra.entity.enums.Role;
 import com.hnaya.inventra.exception.StockNotFoundException;
 import com.hnaya.inventra.mapper.StockMapper;
 import com.hnaya.inventra.repository.StockRepository;
+import com.hnaya.inventra.security.UserPrincipal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +38,9 @@ class StockServiceImplTest {
 
     private Stock stock;
     private Product product;
+    private Warehouse warehouse;
     private StockResponseDTO responseDTO;
+    private UserPrincipal adminPrincipal;
 
     @BeforeEach
     void setUp() {
@@ -44,15 +49,25 @@ class StockServiceImplTest {
                 .nom("Produit Test")
                 .build();
 
+        warehouse = Warehouse.builder()
+                .id(1L)
+                .name("Entrepot Test")
+                .build();
+
         stock = Stock.builder()
                 .id(10L)
                 .product(product)
+                .warehouse(warehouse)
                 .quantiteDisponible(100)
                 .seuilAlerte(20)
                 .build();
 
         responseDTO = new StockResponseDTO();
-        // Configurez les champs du DTO si nécessaire pour vos assertions
+
+        adminPrincipal = new UserPrincipal(
+                1L, "admin", "password", "Admin", "User", "admin@test.com",
+                Role.ADMIN, true, null
+        );
     }
 
     @Test
@@ -66,7 +81,7 @@ class StockServiceImplTest {
         when(stockMapper.toResponseDto(any(Stock.class))).thenReturn(responseDTO);
 
         // When
-        StockResponseDTO result = stockService.updateStockQuantity(stockId, newQty);
+        StockResponseDTO result = stockService.updateStockQuantity(stockId, newQty, adminPrincipal);
 
         // Then
         assertNotNull(result);
@@ -85,7 +100,7 @@ class StockServiceImplTest {
         when(stockMapper.toResponseDto(any(Stock.class))).thenReturn(responseDTO);
 
         // When
-        stockService.updateStockQuantity(stockId, lowQty);
+        stockService.updateStockQuantity(stockId, lowQty, adminPrincipal);
 
         // Then
         assertEquals(lowQty, stock.getQuantiteDisponible());
@@ -100,7 +115,7 @@ class StockServiceImplTest {
         when(stockRepository.findById(1L)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThrows(StockNotFoundException.class, () -> stockService.updateStockQuantity(1L, 50));
+        assertThrows(StockNotFoundException.class, () -> stockService.updateStockQuantity(1L, 50, adminPrincipal));
         verify(stockRepository, never()).save(any());
     }
 
