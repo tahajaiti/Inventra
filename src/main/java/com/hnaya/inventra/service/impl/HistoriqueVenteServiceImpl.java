@@ -4,19 +4,19 @@ import com.hnaya.inventra.dto.request.HistoriqueVenteRequestDTO;
 import com.hnaya.inventra.dto.response.HistoriqueVenteResponseDTO;
 import com.hnaya.inventra.entity.HistoriqueVente;
 import com.hnaya.inventra.entity.Stock;
-import com.hnaya.inventra.exception.ResourceNotFoundException;
+import com.hnaya.inventra.entity.enums.Role;
+import com.hnaya.inventra.exception.AccessDeniedException;
 import com.hnaya.inventra.exception.StockNotFoundException;
 import com.hnaya.inventra.mapper.HistoriqueVenteMapper;
 import com.hnaya.inventra.repository.HistoriqueVenteRepository;
 import com.hnaya.inventra.repository.StockRepository;
+import com.hnaya.inventra.security.UserPrincipal;
 import com.hnaya.inventra.service.HistoriqueVenteService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +28,9 @@ public class HistoriqueVenteServiceImpl implements HistoriqueVenteService {
 
     @Override
     @Transactional
-    public HistoriqueVenteResponseDTO enregistrerVente(HistoriqueVenteRequestDTO dto) {
+    public HistoriqueVenteResponseDTO enregistrerVente(HistoriqueVenteRequestDTO dto, UserPrincipal principal) {
+        validateWarehouseAccess(dto.getWarehouseId(), principal);
+
         Stock stock = stockRepository.findByProductIdAndWarehouseId(dto.getProductId(), dto.getWarehouseId())
                 .orElseThrow(() -> new StockNotFoundException("Stock non trouvé pour ce produit dans cet entrepôt"));
 
@@ -44,7 +46,6 @@ public class HistoriqueVenteServiceImpl implements HistoriqueVenteService {
         vente.setMois(dto.getDateVente().getMonthValue());
         vente.setAnnee(dto.getDateVente().getYear());
 
-
         HistoriqueVente savedVente = historiqueRepository.save(vente);
 
         return historiqueMapper.toResponseDto(savedVente);
@@ -52,7 +53,9 @@ public class HistoriqueVenteServiceImpl implements HistoriqueVenteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<HistoriqueVenteResponseDTO> findByWarehouse(Long warehouseId) {
+    public List<HistoriqueVenteResponseDTO> findByWarehouse(Long warehouseId, UserPrincipal principal) {
+        validateWarehouseAccess(warehouseId, principal);
+
         return historiqueRepository.findByWarehouseId(warehouseId).stream()
                 .map(historiqueMapper::toResponseDto)
                 .toList();
@@ -64,5 +67,15 @@ public class HistoriqueVenteServiceImpl implements HistoriqueVenteService {
         return historiqueRepository.findAll().stream()
                 .map(historiqueMapper::toResponseDto)
                 .toList();
+    }
+
+    private void validateWarehouseAccess(Long warehouseId, UserPrincipal principal) {
+        if (principal.getRole() == Role.MANAGER) {
+            Long userWarehouseId = principal.getWarehouseId();
+            
+            if (userWarehouseId == null || !userWarehouseId.equals(warehouseId)) {
+                throw new AccessDeniedException("You don't have access to this warehouse");
+            }
+        }
     }
 }
