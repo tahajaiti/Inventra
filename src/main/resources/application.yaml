@@ -18,8 +18,8 @@ app:
     role-prefix: ${SECURITY_ROLE_PREFIX:ROLE_}
     bcrypt-strength: ${SECURITY_BCRYPT_STRENGTH:10}
   admin:
-    init-login: ${ADMIN_INIT_LOGIN}
-    init-password: ${ADMIN_INIT_PASSWORD}
+    init-login: ${ADMIN_INIT_LOGIN:admin}
+    init-password: ${ADMIN_INIT_PASSWORD:admin}
 
 logging:
   level:
