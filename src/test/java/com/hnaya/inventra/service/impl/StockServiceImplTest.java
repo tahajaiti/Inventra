@@ -37,19 +37,17 @@ class StockServiceImplTest {
     private StockServiceImpl stockService;
 
     private Stock stock;
-    private Product product;
-    private Warehouse warehouse;
     private StockResponseDTO responseDTO;
     private UserPrincipal adminPrincipal;
 
     @BeforeEach
     void setUp() {
-        product = Product.builder()
+        Product product = Product.builder()
                 .id(1L)
                 .nom("Produit Test")
                 .build();
 
-        warehouse = Warehouse.builder()
+        Warehouse warehouse = Warehouse.builder()
                 .id(1L)
                 .name("Entrepot Test")
                 .build();
