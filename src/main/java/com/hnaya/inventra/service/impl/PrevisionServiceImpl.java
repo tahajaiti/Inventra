@@ -32,7 +32,7 @@ public class PrevisionServiceImpl implements PrevisionService {
     private final GeminiService geminiService;
 
     @Override
-    public PrevisionResponseDTO genererPrevision(Long productId, Long warehouseId, UserPrincipal user) {
+    public PrevisionResponseDTO genererPrevision(Long productId, Long warehouseId) {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Produit non trouvé"));
