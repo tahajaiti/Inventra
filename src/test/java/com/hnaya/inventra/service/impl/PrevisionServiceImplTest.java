@@ -6,8 +6,11 @@ import com.hnaya.inventra.entity.Prevision;
 import com.hnaya.inventra.entity.Product;
 import com.hnaya.inventra.entity.Stock;
 import com.hnaya.inventra.entity.Warehouse;
+import com.hnaya.inventra.entity.enums.Role;
 import com.hnaya.inventra.mapper.PrevisionMapper;
 import com.hnaya.inventra.repository.*;
+import com.hnaya.inventra.security.UserPrincipal;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -43,6 +46,16 @@ class PrevisionServiceImplTest {
 
     @InjectMocks
     private PrevisionServiceImpl previsionService;
+
+    private UserPrincipal adminPrincipal;
+
+    @BeforeEach
+    void setUp() {
+        adminPrincipal = new UserPrincipal(
+                1L, "admin", "password", "Admin", "User", "admin@test.com",
+                Role.ADMIN, true, null
+        );
+    }
 
     @Test
     void genererPrevision_AvecDonneesValides_RetournePrevisionComplete() {
@@ -86,7 +99,7 @@ class PrevisionServiceImplTest {
 
         when(previsionMapper.toResponseDTO(any(Prevision.class))).thenReturn(expectedDTO);
 
-        PrevisionResponseDTO result = previsionService.genererPrevision(productId, warehouseId);
+        PrevisionResponseDTO result = previsionService.genererPrevision(productId, warehouseId, adminPrincipal);
 
         assertNotNull(result);
         verify(previsionRepository).save(any(Prevision.class));
@@ -97,7 +110,7 @@ class PrevisionServiceImplTest {
     void genererPrevision_ProduitNonTrouve_LanceException() {
         when(productRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> previsionService.genererPrevision(1L, 1L));
+        assertThrows(RuntimeException.class, () -> previsionService.genererPrevision(1L, 1L, adminPrincipal));
     }
 
     @Test
@@ -110,7 +123,7 @@ class PrevisionServiceImplTest {
         when(stockRepository.findByProductIdAndWarehouseId(anyLong(), anyLong()))
                 .thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> previsionService.genererPrevision(1L, 1L));
+        assertThrows(RuntimeException.class, () -> previsionService.genererPrevision(1L, 1L, adminPrincipal));
     }
 
     @Test
@@ -124,7 +137,7 @@ class PrevisionServiceImplTest {
         when(previsionMapper.toResponseDTO(any(Prevision.class)))
                 .thenReturn(PrevisionResponseDTO.builder().build());
 
-        List<PrevisionResponseDTO> result = previsionService.getPrevisionsByWarehouse(warehouseId);
+        List<PrevisionResponseDTO> result = previsionService.getPrevisionsByWarehouse(warehouseId, adminPrincipal);
 
         assertNotNull(result);
         assertEquals(2, result.size());
@@ -134,13 +147,14 @@ class PrevisionServiceImplTest {
     @Test
     void getPrevisionById_AvecIdValide_RetournePrevisionDTO() {
         Long id = 1L;
-        Prevision prevision = Prevision.builder().id(id).build();
+        Warehouse warehouse = Warehouse.builder().id(1L).name("Test").build();
+        Prevision prevision = Prevision.builder().id(id).warehouse(warehouse).build();
         PrevisionResponseDTO expectedDTO = PrevisionResponseDTO.builder().id(id).build();
 
         when(previsionRepository.findById(id)).thenReturn(Optional.of(prevision));
         when(previsionMapper.toResponseDTO(prevision)).thenReturn(expectedDTO);
 
-        PrevisionResponseDTO result = previsionService.getPrevisionById(id);
+        PrevisionResponseDTO result = previsionService.getPrevisionById(id, adminPrincipal);
 
         assertNotNull(result);
         assertEquals(id, result.getId());
@@ -150,7 +164,7 @@ class PrevisionServiceImplTest {
     void getPrevisionById_AvecIdInvalide_LanceException() {
         when(previsionRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class, () -> previsionService.getPrevisionById(999L));
+        assertThrows(RuntimeException.class, () -> previsionService.getPrevisionById(999L, adminPrincipal));
     }
 
     private List<HistoriqueVente> creerHistoriqueVentes(int nombre, int quantite) {

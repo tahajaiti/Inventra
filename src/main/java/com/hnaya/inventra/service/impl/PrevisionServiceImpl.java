@@ -6,6 +6,8 @@ import com.hnaya.inventra.entity.Prevision;
 import com.hnaya.inventra.entity.Product;
 import com.hnaya.inventra.entity.Stock;
 import com.hnaya.inventra.entity.Warehouse;
+import com.hnaya.inventra.entity.enums.Role;
+import com.hnaya.inventra.exception.AccessDeniedException;
 import com.hnaya.inventra.mapper.PrevisionMapper;
 import com.hnaya.inventra.repository.*;
 import com.hnaya.inventra.service.PrevisionService;
@@ -32,7 +34,8 @@ public class PrevisionServiceImpl implements PrevisionService {
     private final GeminiService geminiService;
 
     @Override
-    public PrevisionResponseDTO genererPrevision(Long productId, Long warehouseId) {
+    public PrevisionResponseDTO genererPrevision(Long productId, Long warehouseId, UserPrincipal principal) {
+        validateWarehouseAccess(warehouseId, principal);
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Produit non trouvé"));
@@ -135,16 +138,32 @@ public class PrevisionServiceImpl implements PrevisionService {
     }
 
     @Override
-    public List<PrevisionResponseDTO> getPrevisionsByWarehouse(Long warehouseId) {
+    public List<PrevisionResponseDTO> getPrevisionsByWarehouse(Long warehouseId, UserPrincipal principal) {
+        validateWarehouseAccess(warehouseId, principal);
+
         return previsionRepository.findByWarehouseId(warehouseId).stream()
                 .map(previsionMapper::toResponseDTO)
                 .toList();
     }
 
     @Override
-    public PrevisionResponseDTO getPrevisionById(Long id) {
+    public PrevisionResponseDTO getPrevisionById(Long id, UserPrincipal principal) {
         Prevision prevision = previsionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Prévision non trouvée"));
+
+        validateWarehouseAccess(prevision.getWarehouse().getId(), principal);
+
         return previsionMapper.toResponseDTO(prevision);
     }
+
+    private void validateWarehouseAccess(Long warehouseId, UserPrincipal principal) {
+        if (principal.getRole() == Role.MANAGER) {
+            Long userWarehouseId = principal.getWarehouseId();
+
+            if (userWarehouseId == null || !userWarehouseId.equals(warehouseId)) {
+                throw new AccessDeniedException("You don't have access to this warehouse");
+            }
+        }
+    }
 }
+
